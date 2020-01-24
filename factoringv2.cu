@@ -71,9 +71,11 @@ void main()
 		}
 		n++;
 	}
-/*	for (int i = 2; i < length; i++)
+/*	
+	for (int i = 2; i < length; i++)
 		printf("%d: %d - ", i, prime[i]);
-	printf("\nLa lunghezza e' di %d\n", length);*/
+	printf("\nLa lunghezza e' di %d\n", length);
+*/
 
 	cudaMemcpy(d_prime, &prime, SIZE * sizeof(long int), cudaMemcpyHostToDevice);
 	cudaMemcpy(d_number, &number, sizeof(long int), cudaMemcpyHostToDevice);
