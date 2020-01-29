@@ -2,14 +2,19 @@
 #include "device_launch_parameters.h"
 #include <math.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <time.h>
 #define SIZE 1024
 
 __global__ void trial(long int *prime, long int *number, long int *length) {
 	
 	long int i = threadIdx.x + blockIdx.x * blockDim.x;
+/*	long int i = blockIdx.x * blockDim.x * blockDim.y *
+		blockDim.z + threadIdx.z * blockDim.y * blockDim.x +
+		threadIdx.y * blockDim.x + threadIdx.x;
+*/
 
-	if (i > 1)
+	if ((i > 1) && (i <= *length))
 	{
 		if (prime[i])
 		{
@@ -27,7 +32,7 @@ __global__ void trial(long int *prime, long int *number, long int *length) {
 			}
 		}
 	}
-
+	__syncthreads();
 }
 
 
@@ -55,6 +60,7 @@ void main()
 	cudaMalloc((void**) &d_number, sizeof(long int));
 	cudaMalloc((void**) &d_length, sizeof(long int));
 
+	//Eratosthenes Sieve
 
 	for (int i = 0; i < length; i++)
 		prime[i] = 1;
@@ -77,7 +83,12 @@ void main()
 	cudaMemcpy(d_number, &number, sizeof(long int), cudaMemcpyHostToDevice);
 	cudaMemcpy(d_length, &length, sizeof(long int), cudaMemcpyHostToDevice);
 
-	trial << <1, length+1 >> > (d_prime, d_number, d_length);
+	int requiredBlocks = (length / SIZE) + 1;
+	
+	dim3 grid(requiredBlocks, 1, 1);
+	dim3 block(SIZE, 1, 1);
+	
+	trial << <grid, block >> > (d_prime, d_number, d_length);
 
 	free(prime);
 
@@ -87,5 +98,5 @@ void main()
 
 	end = clock();
 	tempo = ((double)(end - start)) / CLOCKS_PER_SEC;
-	printf("Tempo: %f\n", tempo);
+	printf("Time: %f\n", tempo);
 }
