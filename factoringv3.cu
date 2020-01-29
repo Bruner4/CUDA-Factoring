@@ -7,9 +7,9 @@
 
 __global__ void trial(long int *prime, long int *number, long int *length) {
 	
-	int i = threadIdx.x;
+	long int i = threadIdx.x + blockIdx.x * blockDim.x;
 
-	if ((i > 1) && (i <= *length))
+	if (i > 1)
 	{
 		if (prime[i])
 		{
@@ -17,6 +17,7 @@ __global__ void trial(long int *prime, long int *number, long int *length) {
 			if (val * val == *number)
 			{
 				printf("\nPrime factors are %ld and %ld\n", val, val);
+				return;
 			}
 			if (*number % val == 0)
 			{
@@ -35,7 +36,7 @@ void main()
 	long int *d_length;
 	long int *prime;
 	long int *d_prime;
-	int n = 2;
+	long int n = 2;
 	long int elim;
 	long int number;
 	long int *d_number;
@@ -76,7 +77,7 @@ void main()
 	cudaMemcpy(d_number, &number, sizeof(long int), cudaMemcpyHostToDevice);
 	cudaMemcpy(d_length, &length, sizeof(long int), cudaMemcpyHostToDevice);
 
-	trial << <1, length >> > (d_prime, d_number, d_length);
+	trial << <1, length+1 >> > (d_prime, d_number, d_length);
 
 	free(prime);
 
