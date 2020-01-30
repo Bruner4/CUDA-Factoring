@@ -174,7 +174,6 @@ void main()
         if (*check2 == 0)
         {
             printf("Number %d is a prime.\n", number);
-            printf("Radice quadrata: %d", length);
         }
 
 
