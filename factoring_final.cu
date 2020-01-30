@@ -21,9 +21,6 @@
 
 __global__ void trial(long int* prime, long int* number, long int* length, int* check) {
 
-//   	long int i = blockIdx.x * blockDim.x * blockDim.y * blockDim.z + threadIdx.z * blockDim.y * blockDim.x + threadIdx.y * blockDim.x + threadIdx.x;
-    
-
     long int i = threadIdx.x + blockIdx.x * blockDim.x;
 
     if ((i > 1) && (i <= *length))
